@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Бесплатная полоска? It can't be!</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            align-items: center;
+            margin-top: 25px;
+        }
+
+        #feedback {
+            text-align: center;
+        }
+
+        progress {
+            height: 64px;
+            width: 400px;
+            border-radius: 0;
+            background: black;
+            color: orange;
+            display: block;
+            border: 0;
+        }
+
+        progress::-moz-progress-bar {
+            background: orange;
+        }
+
+        progress::-webkit-progress-value {
+            background: orange;
+        }
+
+        button, h2 {
+            border: none;
+            border-radius: 15px;
+            color: black;
+            font-size: 25px;
+            margin: 0 auto;
+            font-weight: normal;
+            height: 64px;
+        }
+
+        button {
+            background: lightblue;
+            cursor: pointer;
+            width: 400px;
+        }
+
+        h2 {
+            line-height: 64px;
+        }
+
+        button:hover {
+            background: orange;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<h1>Проходим версию с PS1?</h1>
+<form id="poll">
+    <button type="submit">ДА</button>
+</form>
+<section id="feedback" class="hidden">
+    <h2>ПИЗДА!</h2>
+    <p>Я обязательно учту ваше мнение</p>
+</section>
+<progress id="progress" max="25" value="0"></progress>
+<script>
+    (async() => {
+        const poll = document.getElementById('poll');
+        const feedback = document.getElementById('feedback');
+        const progress = document.getElementById('progress');
+
+        const reloadProgress = () => {
+            fetch('https://countapi.mileshilliard.com/api/v1/get/0cfd4e68cea7a7f68b30df511955138bbd33a638')
+                .then(response => response.json())
+                .then(({ value }) => progress.value = value)
+        };
+
+        if (window.location.hash === '#results') {
+            setInterval(reloadProgress, 60_000);
+        }
+        reloadProgress();
+
+        poll.onsubmit = async(e) => {
+            e.preventDefault();
+            feedback.classList.remove('hidden');
+            poll.classList.add('hidden');
+            await fetch('https://countapi.mileshilliard.com/api/v1/hit/0cfd4e68cea7a7f68b30df511955138bbd33a638');
+        };
+    })();
+</script>
+</body>
+</html>
